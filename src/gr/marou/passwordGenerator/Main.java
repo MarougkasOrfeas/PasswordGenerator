@@ -14,11 +14,20 @@ public class Main {
 
     public static void main(String[] args) {
         logger.setLevel(Level.INFO);
-        logger.info("Enter the length of the password you want me to generate: ");
+        logger.info("""
+                Use a minimum password length of 8 or more characters.
+                Include lowercase and uppercase alphabetic characters, numbers and symbols.
+                Avoid using the same password twice (e.g., across multiple user accounts and/or software systems).
+                Avoid character repetition, keyboard patterns, dictionary words, letter or number sequences,
+                usernames, relative or pet names, romantic links (current or past) and biographical information (e.g., ID numbers, ancestors' names or dates).
+                Avoid using information that the user's colleagues and/or acquaintances might know to be associated with the user.
+                Do not use passwords which consist wholly of any simple combination of the aforementioned weak components.
+                """);
+        System.out.println("Enter the length of the password you want me to generate: ");
         int digits = readPasswordLength();
 
         String password = new PasswordGenerator().generatePassword(digits);
-        logger.info(password);
+        System.out.println("[PASSWORD]: "+"\033[33m" + password + "\033[0m");
 
         showPasswordStrength(digits);
     }
@@ -32,9 +41,9 @@ public class Main {
         if (digits >= 10 && strengthScore >= 3) {
             logger.info("Strong password");
         } else if (digits >= 6 && strengthScore >= 2) {
-            logger.info("Medium password");
+            logger.warning("Medium password");
         } else {
-            logger.info("Weak password");
+            logger.warning("Weak password");
         }
     }
 
@@ -44,11 +53,16 @@ public class Main {
      */
     private static int readPasswordLength() {
         while (true) {
-            int digits = scanner.nextInt();
-            if (digits > 0) {
-                return digits;
+            String input = scanner.nextLine();
+            try{
+                int digits = Integer.parseInt(input);
+                if (digits > 0) {
+                    return digits;
+                }
+            }catch (NumberFormatException e){
+                logger.log(Level.SEVERE, e.getMessage() );
             }
-            logger.info("Invalid input. Please enter a positive number: ");
+            logger.warning("Invalid input. Please enter a positive number: ");
         }
     }
 }
